@@ -5,7 +5,6 @@
 const char* ssid = "Ahmet";
 const char* password = "Aydeniz123.";
 const char* mqtt_server = "172.20.10.14";
-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee,
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -17,7 +16,7 @@ float sensorOku;
 #define DHTTYPE DHT11  
 float veri;
 DHT dht(DHTPin, DHTTYPE);
-int duman, sıcaklık, tüm, yağmur;
+int duman, sıcaklık, tüm, yağmur; 
 
 void setup_wifi() {
   delay(10);
@@ -46,28 +45,30 @@ void callback(char* topic, byte* message, unsigned int length) {
   }
   Serial.println();
   
-  // Yeni verileri analiz etmek için burada gerekli işlemleri yapabilirsiniz.
-  // Örneğin, verileri ayrıştırabilir ve değişkenlere atayabilirsiniz.
+
   
   // Yağmur verisini almak için:
   if (String(topic) == "/esp8266/yağmur") {
     yağmur = atoi(messageTemp.c_str());
-    Serial.print("yağmur: ");
+    Serial.print("yagmur: ");
     Serial.println(yağmur);
   }
+  
   if (String(topic) == "/esp8266/sıcaklık") {
     sıcaklık = atoi(messageTemp.c_str());
     Serial.print("sıcaklık: ");
     Serial.println(sıcaklık);
   }
+  
   if (String(topic) == "/esp8266/duman") {
     duman = atoi(messageTemp.c_str());
     Serial.print("duman: ");
     Serial.println(duman);
   }
+  
   if (String(topic) == "/esp8266/tüm") {
     tüm = atoi(messageTemp.c_str());
-    Serial.print("tüm: ");
+    Serial.print("tum: ");
     Serial.println(tüm);
   }
 }
@@ -80,7 +81,7 @@ void reconnect() {
       Serial.println("connected");
       client.subscribe("esp8266/4");
       client.subscribe("esp8266/5");
-      // İlgili konulara abone olabilirsiniz:
+      // İlgili konulara abone olduk
       client.subscribe("/esp8266/duman");
       client.subscribe("/esp8266/sıcaklık");
       client.subscribe("/esp8266/tüm");
@@ -100,11 +101,14 @@ void setup() {
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
+
 }
 
 void loop() {
+  reconnect();
+  client.setCallback(callback);
   if (!client.connected()) {
-    reconnect();
+              
     if (!client.loop()) {
       client.connect("ESP8266Client");
     }
@@ -157,9 +161,16 @@ void loop() {
   itoa(veri, Yagmur, 10);
   client.publish("/esp8266/rain", Yagmur);
   }
+  Serial.print("duman: ");
   Serial.println(duman);
+
+  Serial.print("yağmur: ");
   Serial.println(yağmur);
+
+  Serial.print("sicaklik: ");
   Serial.println(sıcaklık);
+
+  Serial.print("tum: ");
   Serial.println(tüm);
-  delay(5000);
+  delay(15000);
 }}
